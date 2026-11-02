@@ -1,0 +1,17 @@
+/.vs
+
+/bin
+
+/obj
+
+/FiyiStack.Blazor/obj
+
+/FiyiStack.Blazor/bin
+
+/FiyiStack.APIWithREST/obj
+
+/FiyiStack.APIWithREST/bin
+
+/FiyiStack.APIWithSOAP/obj
+
+/FiyiStack.APIWithSOAP/bin

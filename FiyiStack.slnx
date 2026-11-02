@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+  <Project Path="FiyiStack.APIWithREST/FiyiStack.APIWithREST.csproj" />
+  <Project Path="FiyiStack.APIWithSOAP/FiyiStack.APIWithSOAP.csproj" />
+  <Project Path="FiyiStack.Blazor/FiyiStack.Blazor.csproj" />
+</Solution>

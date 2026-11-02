@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "fiyistack.blazor": "StartDebugging",
+        "fiyistack.api1": "StartDebugging",
+        "fiyistack.api2": "StartDebugging"
+      }
+    }
+  }
+}

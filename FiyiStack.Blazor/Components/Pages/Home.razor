@@ -1,0 +1,141 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<!--SOAP-->
+@using ExternalServices.APIWithSOAP.Client.Interfaces;
+@using ExternalServices.APIWithSOAP.Product.Interfaces;
+
+@inject IClientSOAPService clientSOAPService;
+@inject IProductSOAPService productSOAPService;
+
+@using ClientServiceReference;
+@using ProductServiceReference;
+
+<!--REST-->
+@using ExternalServices.APIWithREST.User.Interfaces
+@using ExternalServices.APIWithREST.User.DTOs
+
+@inject IUserRESTService userRESTService
+
+<PageTitle>Home</PageTitle>
+
+<h1>Testing de servicios SOAP y REST</h1>
+<br />
+<h4>SOAP</h4>
+<button class="btn btn-primary" @onclick="TestClientBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar cliente por SOAP")</button>
+<button class="btn btn-primary" @onclick="TestProductBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar producto por SOAP")</button>
+
+@if (_ClientDTO != null)
+{
+    <div class="alert alert-success mt-3">
+        Cliente con ID: @_ClientDTO.ClientId
+        <br />
+        Nombre del cliente: @_ClientDTO.Name
+    </div>
+}
+
+@if (_ProductDTO != null)
+{
+    <div class="alert alert-success mt-3">
+        Producto con ID: @_ProductDTO.ProductID
+        <br />
+        Nombre del producto: @_ProductDTO.Name
+    </div>
+}
+<br />
+
+<h4 class="mt-4">REST</h4>
+<button class="btn btn-primary mt-2" @onclick="TestUserByREST" disabled="@_consulting">@(_consulting ? "Consultando..." : "Consultar usuario por REST")</button>
+@if (_UserDTO != null)
+{
+    <div class="alert alert-success mt-3">
+        Usuario con ID: @_UserDTO.UserId
+        <br />
+        Nombre del usuario: @_UserDTO.Name
+    </div>
+}
+
+
+@if (!string.IsNullOrEmpty(_error))
+{
+    <div class="alert alert-danger mt-3">
+        @_error
+    </div>
+}
+
+@code{
+    //SOAP VARIABLES
+    private int _clientIdForSOAP { get; set; } = 1;
+    private ClientDTO? _ClientDTO { get; set; } = null;
+
+    private int _productIdForSOAP { get; set; } = 1;
+    private ProductDTO? _ProductDTO { get; set; } = null;
+
+    //REST VARIABLES
+    private int _userIdForREST { get; set; } = 1;
+    private UserDTO? _UserDTO;
+
+    //FOR BOTH
+    private bool _consulting { get; set; } = false;
+    private string? _error { get; set; }
+
+    private async Task TestClientBySOAP()
+    {
+        _consulting = true;
+        _error = null;
+
+        try
+        {
+            _ClientDTO = await clientSOAPService.GetClientAsync(_clientIdForSOAP);
+        }
+        catch (Exception ex)
+        {
+            _error = $@"No se pudo consultar el servicio SOAP. Mensaje de error: {ex.Message}";
+        }
+        finally
+        {
+            _consulting = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task TestProductBySOAP()
+    {
+        _consulting = true;
+        _error = null;
+
+        try
+        {
+            _ProductDTO = await productSOAPService.GetProductAsync(_productIdForSOAP);
+        }
+        catch (Exception ex)
+        {
+            _error = $@"No se pudo consultar el servicio SOAP. Mensaje de error: {ex.Message}";
+        }
+        finally
+        {
+            _consulting = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task TestUserByREST()
+    {
+        _consulting = true;
+        _error = null;
+
+        try
+        {
+            _UserDTO = await userRESTService.GetUserAsync(_userIdForREST);
+        }
+        catch (Exception ex)
+        {
+            _error = $"No se pudo consultar el servicio REST: {ex.Message}";
+        }
+        finally
+        {
+            _consulting = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
