@@ -12,10 +12,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FiyiStack.API2/FiyiStack.APIWithREST.csproj", "FiyiStack.API2/"]
-RUN dotnet restore "./FiyiStack.API2/FiyiStack.APIWithREST.csproj"
+COPY ["FiyiStack.APIWithREST/FiyiStack.APIWithREST.csproj", "FiyiStack.APIWithREST/"]
+RUN dotnet restore "./FiyiStack.APIWithREST/FiyiStack.APIWithREST.csproj"
 COPY . .
-WORKDIR "/src/FiyiStack.API2"
+WORKDIR "/src/FiyiStack.APIWithREST"
 RUN dotnet build "./FiyiStack.APIWithREST.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase se usa para publicar el proyecto de servicio que se copiará en la fase final.

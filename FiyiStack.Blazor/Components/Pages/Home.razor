@@ -14,16 +14,24 @@
 <!--REST-->
 @using ExternalServices.APIWithREST.User.Interfaces
 @using ExternalServices.APIWithREST.User.DTOs
+@using ExternalServices.APIWithREST.Movie.Interfaces
+@using ExternalServices.APIWithREST.Movie.DTOs
 
 @inject IUserRESTService userRESTService
+@inject IMovieRESTService movieRESTService
 
 <PageTitle>Home</PageTitle>
 
 <h1>Testing de servicios SOAP y REST</h1>
-<br />
+<h2>Configuración básica</h2>
+<p>Grafana:N/A</p>
+<p>Resiliencia:Desactivada</p>
 <h4>SOAP</h4>
 <button class="btn btn-primary" @onclick="TestClientBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar cliente por SOAP")</button>
-<button class="btn btn-primary" @onclick="TestProductBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar producto por SOAP")</button>
+@* 
+Desactivado porque queda más presentable. 1 por microservicio.
+<button class="btn btn-primary" @onclick="TestProductBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar producto por SOAP")</button> 
+*@
 
 @if (_ClientDTO != null)
 {
@@ -46,6 +54,16 @@
 
 <h4 class="mt-4">REST</h4>
 <button class="btn btn-primary mt-2" @onclick="TestUserByREST" disabled="@_consulting">@(_consulting ? "Consultando..." : "Consultar usuario por REST")</button>
+<button class="btn btn-primary mt-2" @onclick="TestMovieByRESTAndPublishInRabbitMQ" disabled="@_consulting">@(_consulting ? "Consultando..." : "Consultar pelicula y publicar en RabbitMQ")</button>
+
+@if (_MovieDTO != null)
+{
+    <div class="alert alert-success mt-3">
+        Película con ID: @_MovieDTO.MovieId
+        <br />
+        Nombre de la película: @_MovieDTO.Title
+    </div>
+}
 @if (_UserDTO != null)
 {
     <div class="alert alert-success mt-3">
@@ -74,6 +92,9 @@
     //REST VARIABLES
     private int _userIdForREST { get; set; } = 1;
     private UserDTO? _UserDTO;
+    private int _movieIdForREST { get; set; } = 1;
+    private MovieDTO? _MovieDTO;
+
 
     //FOR BOTH
     private bool _consulting { get; set; } = false;
@@ -127,6 +148,26 @@
         try
         {
             _UserDTO = await userRESTService.GetUserAsync(_userIdForREST);
+        }
+        catch (Exception ex)
+        {
+            _error = $"No se pudo consultar el servicio REST: {ex.Message}";
+        }
+        finally
+        {
+            _consulting = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task TestMovieByRESTAndPublishInRabbitMQ()
+    {
+        _consulting = true;
+        _error = null;
+
+        try
+        {
+            _MovieDTO = await movieRESTService.GetOneByIdAsync(_movieIdForREST);
         }
         catch (Exception ex)
         {

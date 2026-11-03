@@ -6,6 +6,8 @@ using FiyiStack.Blazor.ExternalServices.APIWithSOAP.Product.Services;
 using Microsoft.AspNetCore.DataProtection;
 using FiyiStack.Blazor.ExternalServices.APIWithREST.User.Interfaces;
 using FiyiStack.Blazor.ExternalServices.APIWithREST.User.Services;
+using FiyiStack.Blazor.ExternalServices.APIWithREST.Movie.Services;
+using FiyiStack.Blazor.ExternalServices.APIWithREST.Movie.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,16 +19,28 @@ builder.Services.AddDataProtection()
     .SetApplicationName("FiyiStack.Blazor")
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"));   
 
+//CLIENT
 builder.Services.AddScoped<IClientSOAPService, ClientSOAPService>();
 
+//PRODUCT
 builder.Services.AddScoped<IProductSOAPService, ProductSOAPService>();
 
+//USER
 builder.Services.AddHttpClient<IUserRESTService, UserRESTService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["REST:UserServiceEndpoint"]
         ?? throw new InvalidOperationException("Falta configurar REST:UserServiceEndpoint."));
     client.Timeout = TimeSpan.FromSeconds(15);
 });
+
+//MOVIE
+builder.Services.AddHttpClient<IMovieRESTService, MovieRESTService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["REST:MovieServiceEndpoint"]
+        ?? throw new InvalidOperationException("Falta configurar REST:MovieServiceEndpoint."));
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
+
 
 var app = builder.Build();
 
