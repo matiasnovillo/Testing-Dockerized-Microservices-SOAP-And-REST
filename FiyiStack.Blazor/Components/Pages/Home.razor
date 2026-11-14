@@ -16,6 +16,8 @@
 @using ExternalServices.APIWithREST.User.DTOs
 @using ExternalServices.APIWithREST.Movie.Interfaces
 @using ExternalServices.APIWithREST.Movie.DTOs
+@using Polly.CircuitBreaker
+@using Polly.Timeout
 
 @inject IUserRESTService userRESTService
 @inject IMovieRESTService movieRESTService
@@ -24,8 +26,6 @@
 
 <h1>Testing de servicios SOAP y REST</h1>
 <h2>Configuración básica</h2>
-<p>Grafana:N/A</p>
-<p>Resiliencia:Desactivada</p>
 <h4>SOAP</h4>
 <button class="btn btn-primary" @onclick="TestClientBySOAP" disabled="@_consulting"> @(_consulting ? "Consultando..." : "Consultar cliente por SOAP")</button>
 @* 
@@ -169,9 +169,21 @@ Desactivado porque queda más presentable. 1 por microservicio.
         {
             _MovieDTO = await movieRESTService.GetOneByIdAsync(_movieIdForREST);
         }
-        catch (Exception ex)
+        catch (TimeoutRejectedException)
         {
-            _error = $"No se pudo consultar el servicio REST: {ex.Message}";
+            _error = "La consulta de la película tardó demasiado. El servicio REST no respondió dentro del tiempo esperado.";
+        }
+        catch (BrokenCircuitException)
+        {
+            _error = "La consulta de la película está temporalmente suspendida porque el servicio REST no está disponible. Inténtalo nuevamente en unos segundos.";
+        }
+        catch (HttpRequestException)
+        {
+            _error = "No se pudo conectar con el servicio REST de películas. Comprueba que la API esté disponible.";
+        }
+        catch (Exception)
+        {
+            _error = "No se pudo consultar la película debido a un error inesperado.";
         }
         finally
         {

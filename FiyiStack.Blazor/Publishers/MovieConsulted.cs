@@ -1,6 +1,6 @@
-﻿namespace FiyiStack.APIWithREST.Areas.Movie.DTOs
+﻿namespace FiyiStack.Blazor.Publishers
 {
-    public class MovieConsultedDTO
+    public class MovieConsulted
     {
         public int MovieId { get; set; }
         public string Title { get; set; } = string.Empty;

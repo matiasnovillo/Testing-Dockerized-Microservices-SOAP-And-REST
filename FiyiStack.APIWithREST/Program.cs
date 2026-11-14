@@ -1,4 +1,4 @@
-using FiyiStack.APIWithREST.Areas.Movie.Consumers;
+using FiyiStack.APIWithREST.Consumers;
 using FiyiStack.APIWithREST.EmailService;
 using MassTransit;
 

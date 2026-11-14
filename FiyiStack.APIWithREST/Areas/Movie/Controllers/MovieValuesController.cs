@@ -1,9 +1,7 @@
 ﻿using FiyiStack.APIWithREST.Areas.Movie.DTOs;
+using FiyiStack.APIWithREST.Consumers;
 using MassTransit;
-using MassTransit.Transports;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 
 namespace FiyiStack.APIWithREST.Areas.Movie.Controllers
 {
@@ -15,14 +13,14 @@ namespace FiyiStack.APIWithREST.Areas.Movie.Controllers
         [HttpGet("api/Movie/GetOneById/{id}")]
         public async Task<ActionResult<MovieDTO>> GetOneById(int id)
         {
+
             //Aca se haria una consulta a la base de datos para obtener la pelicula por id
             MovieDTO MovieDTO = new() { MovieId = id, Title = "Los 3 chiflados" };
 
-            //Esto podria ir en una capa más interna, pero por simplicidad lo dejo aca. Se publica el evento de que se consulto una pelicula
-            await _publishEndpoint.Publish<MovieConsultedDTO>(new
+            await _publishEndpoint.Publish(new MovieConsulted
             {
-                MovieDTO.MovieId,
-                MovieDTO.Title
+                MovieId = MovieDTO.MovieId,
+                Title = MovieDTO.Title
             });
 
             if (MovieDTO == null)

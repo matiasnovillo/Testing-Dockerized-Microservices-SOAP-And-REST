@@ -1,24 +1,23 @@
 ﻿using FiyiStack.Blazor.ExternalServices.APIWithREST.Movie.DTOs;
 using FiyiStack.Blazor.ExternalServices.APIWithREST.Movie.Interfaces;
-using System.Numerics;
+using FiyiStack.Blazor.Publishers;
 
 namespace FiyiStack.Blazor.ExternalServices.APIWithREST.Movie.Services
 {
-    public class MovieRESTService : IMovieRESTService
+    public class MovieRESTService(HttpClient httpClient) : IMovieRESTService
     {
-        private readonly HttpClient _httpClient;
-
-        public MovieRESTService(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task<MovieDTO?> GetOneByIdAsync(int movieId)
         {
             var response = await _httpClient.GetAsync($"/api/Movie/GetOneById/{movieId}");
+            
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonAsync<MovieDTO>();
+            var movie = await response.Content.ReadFromJsonAsync<MovieDTO>() ??
+                throw new InvalidOperationException($"No se encontró la película con ID {movieId}.");
+
+            return movie;
         }
     }
 }
